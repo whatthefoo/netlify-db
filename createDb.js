@@ -24,7 +24,7 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   }
 
   initDbSpinner.start();
-  const adapter = new FileSync(dbPath + `/${dbName || "db"}.json`);
+  const adapter = new FileSync(dbPath + `/${dbName}.json`);
   const db = low(adapter);
 
   initDatabase(config.collections);
