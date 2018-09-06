@@ -32,11 +32,22 @@ Example:
 netlify-db create public/admin src
 ```
 
+You should run this before your build script so Netlify can create a fresh json file for each change.
+
+```json
+"scripts": {
+    "build": "npm run build:db && npm run build:app",
+    "build:db": "netlify-db create public/admin",
+    "build:app": "your-build-script"
+  }
+```
+
 That's it! :tada:
 
 ## Options
 
-`-w` `--watch` to watch markdown files and write to the database.
+`-w` `--watch` to watch markdown files and write to the database. Useful when developing and pulling new changes, or if you want to see changes when editing the markdown.
+
 `-n` `--name` name for the database. ex: `--name my-database`
 
 ## Author

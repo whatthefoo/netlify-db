@@ -2,8 +2,9 @@
 
 const program = require("commander");
 const createDb = require("./createDb");
+const package = require("./package.json");
 
-program.version("0.0.1", "-v, --version");
+program.version(package.version, "-v, --version");
 
 program
   .command("create <config-path> <database-path>")
