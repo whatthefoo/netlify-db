@@ -1,6 +1,6 @@
 {
   "name": "netlify-db",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Turn your markdown files into a small json-database",
   "main": "index.js",
   "scripts": {
