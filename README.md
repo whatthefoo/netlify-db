@@ -37,7 +37,7 @@ You should run this before your build script so Netlify can create a fresh json 
 ```json
 "scripts": {
     "build": "npm run build:db && npm run build:app",
-    "build:db": "netlify-db create public/admin",
+    "build:db": "netlify-db create public/admin src",
     "build:app": "your-build-script"
   }
 ```
