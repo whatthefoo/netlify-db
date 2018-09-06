@@ -1,5 +1,3 @@
-![](https://assets.zeit.co/image/upload/v1527770721/repositories/serve/serve-repo-banner.png)
-
 [![Install Size](https://packagephobia.now.sh/badge?p=serve)](https://packagephobia.now.sh/result?p=netlify-db)
 
 Use your favorite framework with Netlify CMS.
