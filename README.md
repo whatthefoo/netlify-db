@@ -1,4 +1,4 @@
-# [![Netlify DB](logo.png)]
+# [](logo.png)
 
 > Use your favorite framework with Netlify CMS.
 
