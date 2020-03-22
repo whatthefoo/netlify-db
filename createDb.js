@@ -1,3 +1,4 @@
+const glob = require("glob")
 const fs = require("fs");
 const matter = require("gray-matter");
 const chokidar = require("chokidar");
@@ -11,15 +12,15 @@ const locateSpinner = ora("Locating config file...");
 const initDbSpinner = ora("Creating database...");
 const markdownSpinner = ora("Adding content from markdown files...");
 
-module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
+module.exports = function initConfig(dbPath, isWatching, dbName) {
   let config;
   try {
     locateSpinner.stop();
-    config = yaml.safeLoad(fs.readFileSync(configPath + "/config.yml", "utf8"));
+    config = yaml.safeLoad(fs.readFileSync("./markdown-db.yml", "utf8"));
     locateSpinner.clear();
   } catch (err) {
     return locateSpinner.fail(
-      `Ops! Could not locate Netlify config file. Please make sure you are referencing the correct path`
+      `Ops! Could not locate config file. Please make sure you are referencing the correct path`
     );
   }
 
@@ -49,19 +50,18 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   }
 
   function generateFromMarkdown(collections) {
+    console.log(collections)
     collections.forEach(({ folder, name }) => {
-      fs.readdirSync(folder).forEach(file => {
-        if (path.extname(file) === ".md") {
-          addContent(folder + "/" + file, name);
-        }
-      });
+      glob(folder + "**/*.md",  (er, files) => {
+        files.forEach(file => addContent(file))
+      })
     });
   }
 
   function watchFromMarkdown(collections) {
     collections.forEach(({ folder, name }) => {
       chokidar
-        .watch(folder + "/**.md")
+        .watch(folder + "**/*.md")
         .on("add", path => addContent(path, name))
         .on("change", path => replaceContent(path, name))
         .on("unlink", path => deleteContent(path, name));
@@ -69,17 +69,17 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   }
 
   function addContent(filePath, name) {
-    const { path, data } = matter.read(filePath);
+    const { path, data, content } = matter.read(filePath);
     db.get(name)
-      .push({ path, ...data })
+      .push({ path, ...data, content })
       .write();
   }
 
   function replaceContent(filePath, name) {
-    const file = matter.read(filePath);
+    const { path, data, content } = matter.read(filePath);
     db.get(name)
       .find({ path: filePath })
-      .assign(file)
+      .assign({ path, ...data, content })
       .write();
   }
 
