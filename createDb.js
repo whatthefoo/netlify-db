@@ -1,3 +1,4 @@
+const glob = require("glob");
 const fs = require("fs");
 const glob = require("glob");
 const matter = require("gray-matter");
@@ -12,11 +13,11 @@ const locateSpinner = ora("Locating config file...");
 const initDbSpinner = ora("Creating database...");
 const markdownSpinner = ora("Adding content from markdown files...");
 
-module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
+module.exports = function initConfig(configFile, dbPath, isWatching, dbName) {
   let config;
   try {
     locateSpinner.stop();
-    config = yaml.safeLoad(fs.readFileSync(configPath + "/config.yml", "utf8"));
+    config = yaml.safeLoad(fs.readFileSync(configFile, "utf8"));
     locateSpinner.clear();
   } catch (err) {
     return locateSpinner.fail(
@@ -50,6 +51,7 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   }
 
   function generateFromMarkdown(collections) {
+    console.log(collections);
     collections.forEach(({ folder, name }) => {
       glob(folder, (err, files) => {
         files.forEach((path) => {
@@ -70,15 +72,18 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   }
 
   function addContent(filePath, name) {
-    const { path, data } = matter.read(filePath);
+    const { path, data, content } = matter.read(filePath);
     db.get(name)
-      .push({ path, ...data })
+      .push({ path, ...data, content })
       .write();
   }
 
   function replaceContent(filePath, name) {
-    const file = matter.read(filePath);
-    db.get(name).find({ path: filePath }).assign(file).write();
+    const { path, data, content } = matter.read(filePath);
+    db.get(name)
+      .find({ path: filePath })
+      .assign({ path, ...data, content })
+      .write();
   }
 
   function deleteContent(filePath, name) {

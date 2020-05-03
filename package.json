@@ -1,13 +1,13 @@
 {
-  "name": "netlify-db",
-  "version": "0.0.2",
+  "name": "markdown-db",
+  "version": "0.1.0",
   "description": "Turn your markdown files into a small json-database",
   "main": "index.js",
   "scripts": {
     "release": "np"
   },
   "bin": {
-    "netlify-db": "index.js"
+    "markdown-db": "index.js"
   },
   "author": "",
   "license": "ISC",
