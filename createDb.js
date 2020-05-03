@@ -1,4 +1,5 @@
 const fs = require("fs");
+const glob = require("glob");
 const matter = require("gray-matter");
 const chokidar = require("chokidar");
 const path = require("path");
@@ -50,10 +51,10 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
 
   function generateFromMarkdown(collections) {
     collections.forEach(({ folder, name }) => {
-      fs.readdirSync(folder).forEach(file => {
-        if (path.extname(file) === ".md") {
-          addContent(folder + "/" + file, name);
-        }
+      glob(folder, (err, files) => {
+        files.forEach((path) => {
+          addContent(path, name);
+        });
       });
     });
   }
@@ -61,10 +62,10 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
   function watchFromMarkdown(collections) {
     collections.forEach(({ folder, name }) => {
       chokidar
-        .watch(folder + "/**.md")
-        .on("add", path => addContent(path, name))
-        .on("change", path => replaceContent(path, name))
-        .on("unlink", path => deleteContent(path, name));
+        .watch(folder)
+        .on("add", (path) => addContent(path, name))
+        .on("change", (path) => replaceContent(path, name))
+        .on("unlink", (path) => deleteContent(path, name));
     });
   }
 
@@ -77,15 +78,10 @@ module.exports = function initConfig(configPath, dbPath, isWatching, dbName) {
 
   function replaceContent(filePath, name) {
     const file = matter.read(filePath);
-    db.get(name)
-      .find({ path: filePath })
-      .assign(file)
-      .write();
+    db.get(name).find({ path: filePath }).assign(file).write();
   }
 
   function deleteContent(filePath, name) {
-    db.get(name)
-      .remove({ path: filePath })
-      .write();
+    db.get(name).remove({ path: filePath }).write();
   }
 };
